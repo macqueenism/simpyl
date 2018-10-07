@@ -126,8 +126,8 @@ def update_migrations_table(migration_filename, upgrade=True):
 def import_migration_from_filename(filename):
     if '.py' in filename:
         filename = filename[:-3]
-    migrations_module = __import__(f'migrations.versions.{filename}')
-    migration = getattr(migrations_module.versions, filename)
+    migrations_module = __import__(f'versions.{filename}')
+    migration = getattr(migrations_module, filename)
     return migration
 
 

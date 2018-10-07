@@ -3,3 +3,4 @@ versions/*.py
 versions/*.pyc
 !versions/__init__.py
 *.pyc
+.idea
