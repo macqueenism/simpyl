@@ -49,7 +49,7 @@ def downgrade(connection):
     """)
 ```
 
-### Running an upgrade
+### Running an upgrade on a schema
 
 Upgrade the schema to the most current version found in the migrations folder.
 This will run all the migrations for that schema in order, adding the version to the
@@ -65,6 +65,18 @@ schema. This is useful when a schema does not exist for example.
 
 ```bash
 $ python migrate.py upgrade <schema> --all
+```
+
+
+### Running all migration files for all schemas
+
+Run all the migrations in your migrations directory if you're setting up
+a fresh database from scratch. Saves you having to run migrations for each of
+your schemas. Note this does not take into account migrations that have already
+been run.
+
+```bash
+$ python migrate.py upgrade-all
 ```
 
 

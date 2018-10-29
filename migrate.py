@@ -68,8 +68,15 @@ def downgrade(schema, run_all, timestamp):
         click.echo('please use the --all or --to flag to specify the type of downgrade')
 
 
+@click.command()
+def upgrade_all():
+    click.echo(f'running all migrations')
+    run_migrations('all', all_migration_files())
+
+
 migrate.add_command(create)
 migrate.add_command(upgrade)
+migrate.add_command(upgrade_all)
 migrate.add_command(downgrade)
 
 
@@ -129,6 +136,11 @@ def import_migration_from_filename(filename):
     migrations_module = __import__(f'versions.{filename}')
     migration = getattr(migrations_module, filename)
     return migration
+
+
+def all_migration_files():
+    for _, _, files in os.walk(f'{CURRENT_DIRECTORY}/versions'):
+        return sorted([file for file in files if file != '__init__.py'])
 
 
 def migration_files_for_schema(schema):
