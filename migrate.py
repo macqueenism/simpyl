@@ -5,11 +5,9 @@ import datetime
 
 from sqlalchemy import create_engine
 
-import migrations_config as config
+from migrations_config import DB_URI, SEPARATOR
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
-
-SEPARATOR = '@'
 
 DEFAULT_MIGRATION_FILE = """
 
@@ -21,7 +19,7 @@ def downgrade(connection):
     connection.execute(\"\"\" \"\"\")
 
 """
-ENGINE = create_engine(config.DB_URI)
+ENGINE = create_engine(DB_URI)
 
 
 @click.group()
