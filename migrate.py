@@ -136,11 +136,11 @@ def import_migration_from_filename(filename):
 
 def migration_files_for_schema(schema):
     for _, _, files in os.walk(f'{CURRENT_DIRECTORY}/versions'):
-        return [
+        return sorted([
             filename
             for filename in files
             if f'{SEPARATOR}{schema}{SEPARATOR}' in filename
-        ]
+        ])
 
 
 def schema_exists(schema):

@@ -14,6 +14,9 @@ $ virtualenv/bin/activate && pip install -r requirements.txt
 ```
 
 Then set the `DB_URI` value in `migrations_config.py`.
+Other configurable values in the `migrations_config.py` include:
+- `SEPARATOR`: change the character used to separate the parts of migration file names, defaults to ':'
+
 
 ## Usage
 
