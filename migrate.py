@@ -31,6 +31,9 @@ def migrate():
 @click.argument('schema')
 @click.argument('name')
 def create(schema, name):
+    if SEPARATOR in name:
+        click.echo(f'error: file separator {SEPARATOR} cannot be used in migration name')
+        return
     timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
     filename = f'{timestamp}{SEPARATOR}{schema}{SEPARATOR}{name}.py'
     click.echo(f'Creating new migration file {filename}')
