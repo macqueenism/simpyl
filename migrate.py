@@ -5,7 +5,7 @@ import datetime
 
 from sqlalchemy import create_engine
 
-import migrations_config as config
+from migrations_config import DB_URI, SEPARATOR
 
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
@@ -19,7 +19,7 @@ def downgrade(connection):
     connection.execute(\"\"\" \"\"\")
 
 """
-ENGINE = create_engine(config.DB_URI)
+ENGINE = create_engine(DB_URI)
 
 
 @click.group()
@@ -31,10 +31,14 @@ def migrate():
 @click.argument('schema')
 @click.argument('name')
 def create(schema, name):
+    if SEPARATOR in name:
+        click.echo(f'error: file separator {SEPARATOR} cannot be used in migration name')
+        return
     timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
-    filename = f'{timestamp}:{schema}:{name}.py'
+    filename = f'{timestamp}{SEPARATOR}{schema}{SEPARATOR}{name}.py'
     click.echo(f'Creating new migration file {filename}')
-    with open(f'{CURRENT_DIRECTORY}/versions/{filename}', 'w+') as f:
+    os_path = os.path.join(CURRENT_DIRECTORY, 'versions', filename)
+    with open(os_path, 'w') as f:
         f.write(DEFAULT_MIGRATION_FILE)
 
 
@@ -60,10 +64,12 @@ def downgrade(schema, run_all, timestamp):
         click.echo('schema not found')
         return
     if run_all:
-        run_migrations(schema, migration_files_for_schema(schema), upgrade=False)
+        files = migration_files_for_schema(schema)
+        run_migrations(schema, list(reversed(files)), upgrade=False)
     if timestamp:
         click.echo(f'running downgrade on all migrations for {schema} older than {timestamp}')
-        run_migrations(schema, get_migration_files_for_schema_older_than(schema, timestamp), upgrade=False)
+        files = get_migration_files_for_schema_older_than(schema, timestamp)
+        run_migrations(schema, list(reversed(files)), upgrade=False)
     if not run_all or timestamp:
         click.echo('please use the --all or --to flag to specify the type of downgrade')
 
@@ -98,7 +104,7 @@ def run_migrations(schema, migrations_to_run, upgrade=True):
 
 
 def get_migration_filename_parts(migration_filename):
-    filename_parts = str.split(migration_filename, ':')
+    filename_parts = str.split(migration_filename, SEPARATOR)
     return filename_parts[0], filename_parts[1], filename_parts[2][:-3]
 
 
@@ -133,11 +139,11 @@ def import_migration_from_filename(filename):
 
 def migration_files_for_schema(schema):
     for _, _, files in os.walk(f'{CURRENT_DIRECTORY}/versions'):
-        return [
+        return sorted([
             filename
             for filename in files
-            if f':{schema}:' in filename
-        ]
+            if f'{SEPARATOR}{schema}{SEPARATOR}' in filename
+        ])
 
 
 def schema_exists(schema):
