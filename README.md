@@ -97,6 +97,14 @@ Downgrade all for a schema:
 $ python migrate.py downgrade <schema> --all
 ```
 
+
+### List migration versions
+
+```bash
+$ python migrate.py versions [--schema <schema_name>]
+```
+
+
 ## Running postgres
 
 There's a docker-compose file with a postgres service if you want to

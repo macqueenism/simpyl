@@ -80,10 +80,22 @@ def upgrade_all():
     run_migrations('all', all_migration_files())
 
 
+@click.command()
+@click.option('--schema', default='')
+def versions(schema):
+    if schema != '':
+        files = migration_files_for_schema(schema)
+    else:
+        files = all_migration_files()
+    for migration in files:
+        click.echo(migration)
+
+
 migrate.add_command(create)
 migrate.add_command(upgrade)
 migrate.add_command(upgrade_all)
 migrate.add_command(downgrade)
+migrate.add_command(versions)
 
 
 def get_migration_files_for_schema_older_than(schema, timestamp):
